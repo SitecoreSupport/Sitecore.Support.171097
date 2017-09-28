@@ -65,6 +65,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="App_Config\Include\zzz\Sitecore.Support.171097.config" />
+    <Content Include="sitecore\shell\Applications\Page Modes\ChromeControls.js" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
