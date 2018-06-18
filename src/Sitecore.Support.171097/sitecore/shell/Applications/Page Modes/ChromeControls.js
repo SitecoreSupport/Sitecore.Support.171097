@@ -393,13 +393,17 @@
     },
 
     renderDsSection: function () {
-        var hasDs = Sitecore.PageModes.ChromeManager.selectedChrome().data.contextItemUri.indexOf(Sitecore.PageModes.PageEditor.itemID()) == -1;
+        var contextItemUri = Sitecore.PageModes.ChromeManager.selectedChrome().data.contextItemUri;
+
+        var hasDs = contextItemUri == null ? false : contextItemUri.indexOf(Sitecore.PageModes.PageEditor.itemID()) == -1;
         var description = hasDs ? Sitecore.PageModes.Texts.ChangeAssociatedContent : Sitecore.PageModes.Texts.AddAssociatedContent;
         var imageSrc = "/sitecore/shell/client/Sitecore/Speak/Ribbon/Assets/Images/SitecoreIcons/16x16/data_" + (hasDs ? "check" : "plus") + ".png";
+        var tooltipParameter = "dsTooltipParameter";
+        var headerParameter = "dsHeaderParameter";
 
-        Sitecore.PageModes.Utility.replaceCommandsAttributes(this.dsCommands.find("a"), "title", "{dsTooltip}", description);
-        Sitecore.PageModes.Utility.replaceCommandsAttributes(this.dsCommands.find("span"), null, "{dsHeader}", description);
-        Sitecore.PageModes.Utility.replaceCommandsAttributes(this.dsCommands.find("img"), "alt", "{dsTooltip}", description);
+        Sitecore.PageModes.Utility.replaceCommandsAttributes(this.dsCommands.find("a"), "title", tooltipParameter, description);
+        Sitecore.PageModes.Utility.replaceCommandsAttributes(this.dsCommands.find("span"), null, headerParameter, description);
+        Sitecore.PageModes.Utility.replaceCommandsAttributes(this.dsCommands.find("img"), "alt", tooltipParameter, description);
         Sitecore.PageModes.Utility.replaceCommandsAttributes(this.dsCommands.find("img"), "src", "/temp/IconCache/Office/16x16/data.png", imageSrc);
 
         var template = [
@@ -519,7 +523,8 @@
     },
 
     canRenderWorkflowCommands: function () {
-        return Sitecore.PageModes.ChromeManager.selectedChrome().data.contextItemUri.indexOf(Sitecore.PageModes.PageEditor.itemID()) == -1;
+        var contextItemUri = Sitecore.PageModes.ChromeManager.selectedChrome().data.contextItemUri;
+        return contextItemUri == null ? false : contextItemUri.indexOf(Sitecore.PageModes.PageEditor.itemID()) == -1;
     },
 
     updateCommands: function () {
@@ -689,12 +694,18 @@
     },
 
     getItemId: function () {
+        if (this.chrome.data.contextItemUri == null) {
+            return null;
+        }
         var contextUriArray = this.chrome.data.contextItemUri.split("/");
         return contextUriArray[contextUriArray.length - 1].split("?")[0];
     },
 
     getItemVersion: function () {
         var contextItemUri = this.chrome.data.contextItemUri;
+        if (contextItemUri == null) {
+            return null;
+        }
         var fragments = contextItemUri.split("/")[contextItemUri.split("/").length - 1].split("?");
         if (!fragments
             || fragments.length === 0) {
