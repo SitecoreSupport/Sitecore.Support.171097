@@ -2,7 +2,6 @@
     constructor: function () {
         var cssClass = Sitecore.PageModes.PageEditor.languageCssClass() + (Sitecore.PageModes.Utility.isIE ? " ie" : "");
         this.toolbar = $sc("<div class='scChromeToolbar " + cssClass + "'></div>");
-
         // Sitecore.Support.171097
         this.renderings = {};
 
@@ -299,45 +298,32 @@
         return tag;
     },
 
-    setLoadingAnimation: function (element, show) {
-        element.children("img[id='myItemsLoadingIndicator']:first").remove();
-        if (show) {
-            var gif = '<img id="myItemsLoadingIndicator" src="/sitecore/shell/client/Speak/Assets/img/Speak/ProgressIndicator/sc-spinner16.gif" style="margin-left: 5px; height: 10px; width: 10px;">';
-            element.append(gif);
-        }
-    },
-
     renderDatasourceUsagesCommand: function () {
-        var self = this;
         var container = $sc("<a href='#' class='scChromeCommand scChromeMoreSection'></a>");
         var tag = $sc("<span class='scChromeCommandText'></span>");
-        tag.text(Sitecore.PageModes.Texts.Usage);
-        this.setLoadingAnimation(tag, true);
         var experienceEditor = Sitecore.PageModes.PageEditor.ExperienceEditor();
         var context = experienceEditor.generateDefaultContext();
         var itemId = this.getItemId();
         var database = context.currentContext.database;
         var version = this.getItemVersion();
-
-
-        // Sitcore.Support.171097
         context.currentContext.itemId = itemId;
         context.currentContext.value = this.usagesPathPatterns.join("|");
 
-
+        // Sitecore.Support.171097
         if (this.chrome._originalDOMElement.context.id in this.renderings && this.renderings[this.chrome._originalDOMElement.context.id] > 0) {
             tag.text(Sitecore.PageModes.Texts.Usage + " " + this.renderings[this.chrome._originalDOMElement.context.id]);
         }
         else {
+            var count;
             experienceEditor.PipelinesUtil.generateRequestProcessor("ExperienceEditor.Datasources.GetDatasourceUsagesCount", function (response) {
                 var result = response.responseValue.value;
-                var count = result ? result.length : 1;
+                count = result ? result.length : 1;
                 tag.text(Sitecore.PageModes.Texts.Usage + " " + count);
-                self.setLoadingAnimation(tag, false);
                 container.attr("title", Sitecore.PageModes.Texts.TheNumberOfWebpagesIncludingThisOneWhereThisAssociatedContentIsUsed.replace("{0}", count));
-            }, undefined, true).execute(context);
+            }).execute(context);
             this.renderings[this.chrome._originalDOMElement.context.id] = count;
         }
+
         tag.click($sc.proxy(function (e) {
             e.stop();
 
@@ -664,9 +650,8 @@
             commandsRow.append(this.renderWorkflowSection());
         }
 
-
         if (!isDatasourceUsagesCommand) {
-            // The "datasource usages" section 
+            /* The "datasource usages" section */
             isDatasourceUsagesCommand = true;
             var datasourceUsagesCommand = this.renderDatasourceUsagesCommand();
             if (datasourceUsagesCommand) {
@@ -712,7 +697,6 @@
         if (this.chrome.data.contextItemUri == null) {
             return null;
         }
-
         var contextUriArray = this.chrome.data.contextItemUri.split("/");
         return contextUriArray[contextUriArray.length - 1].split("?")[0];
     },
@@ -740,10 +724,6 @@
         var experienceEditor = Sitecore.PageModes.PageEditor.ExperienceEditor();
         var context = experienceEditor.generateDefaultContext();
         context.currentContext.itemId = this.getItemId();
-        if (!context.currentContext.itemId) {
-            return null;
-        }
-
         var result = null;
         experienceEditor.PipelinesUtil.generateRequestProcessor("ExperienceEditor.Workflow.GetWorkFlowCommands", function (response) {
             result = response.responseValue.value;
@@ -917,11 +897,11 @@
         this._overlay.show();
     }
 },
-    {
-        commandRenderers: {},
-        eventNameSpace: "chromecontrols.",
-        registerCommandRenderer: function (commandName, renderer, chromeType) {
-            var key = chromeType != null ? chromeType.key() + ":" + commandName : commandName;
-            Sitecore.PageModes.ChromeControls.commandRenderers[key] = renderer;
-        }
-    });
+{
+    commandRenderers: {},
+    eventNameSpace: "chromecontrols.",
+    registerCommandRenderer: function (commandName, renderer, chromeType) {
+        var key = chromeType != null ? chromeType.key() + ":" + commandName : commandName;
+        Sitecore.PageModes.ChromeControls.commandRenderers[key] = renderer;
+    }
+});
