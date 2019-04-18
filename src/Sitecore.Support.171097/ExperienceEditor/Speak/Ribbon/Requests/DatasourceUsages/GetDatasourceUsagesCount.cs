@@ -70,7 +70,7 @@ namespace Sitecore.Support.ExperienceEditor.Speak.Ribbon.Requests.DatasourceUsag
         thread.Start(model);
         if (!thread.Join(_maxProcessTime * 1000))
         {
-          result.Value = new { length = list.Count + " (%2B)" };
+          result.Value = new { length = list.Count + "+" };
         }
       }
 
